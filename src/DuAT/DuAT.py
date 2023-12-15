@@ -367,7 +367,7 @@ class DuAT(nn.Module):
         output = F.interpolate(output, scale_factor=8, mode='bilinear')
         output2 = F.interpolate(output2, scale_factor=4, mode='bilinear')
         
-        return output, output2
+        return output+output2
 
 
 
