@@ -1,5 +1,7 @@
 # Esophagus Segmentation Tasks
 
+![Esophagus](./figures/fig1.jpg)
+
 ## Train Process
 The main training file is:
 ```
