@@ -238,8 +238,8 @@ class ConvBranch(nn.Module):
             nn.Conv2d(hidden_features, out_features, 1, bias=False),
             nn.ReLU(inplace=True)
         )
-        self.ca = ChannelAttention(64)
-        self.sa = SpatialAttention()
+        # self.ca = ChannelAttention(64)
+        # self.sa = SpatialAttention()
         self.sigmoid_spatial = nn.Sigmoid()
     
     def forward(self, x):
@@ -263,7 +263,7 @@ class GLSA(nn.Module):
         super().__init__()
                       
         self.conv1_1 = BasicConv2d(embed_dim*2,embed_dim, 1)
-        self.conv1_1_1 = BasicConv2d(input_dim//2,embed_dim,1)
+        # self.conv1_1_1 = BasicConv2d(input_dim//2,embed_dim,1)
         self.local_11conv = nn.Conv2d(input_dim//2,embed_dim,1)
         self.global_11conv = nn.Conv2d(input_dim//2,embed_dim,1)
         self.GlobelBlock = ContextBlock(inplanes= embed_dim, ratio=2)
@@ -323,11 +323,10 @@ class SBA(nn.Module):
         
             
 class DuAT(nn.Module):
-    def __init__(self, dim=32, dims= [64, 128, 320, 512]):
+    def __init__(self, dim=32, dims= [64, 128, 320, 512], path = '/workspace/Encvis/Code/src/DuAT/pvt_v2_b2.pth'):
         super(DuAT, self).__init__()
 
         self.backbone = pvt_v2_b2()  # [64, 128, 320, 512]
-        path = '/workspace/Encvis/Code/src/DuAT/pvt_v2_b2.pth'
         save_model = torch.load(path)
         model_dict = self.backbone.state_dict()
         state_dict = {k: v for k, v in save_model.items() if k in model_dict.keys()}
