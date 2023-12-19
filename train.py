@@ -135,7 +135,7 @@ if __name__ == '__main__':
     # model = DuAT(**config.duat)
     # model = u_net(**config.unet)
     
-    image_size = config.dataset.image_size
+    image_size = config.dataset.CVC_ClinicDB.image_size
 
     accelerator.print('Load Dataloader...')
     train_loader, val_loader = get_dataloader(config)

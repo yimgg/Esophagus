@@ -58,7 +58,7 @@ class PolypDataset(data.Dataset):
 def give_augmentations(config):
     augmentations = A.Compose([
             A.Normalize(),
-            A.Resize(config.dataset.image_size, config.dataset.image_size, interpolation=cv2.INTER_NEAREST),
+            A.Resize(config.dataset.CVC_ClinicDB.image_size, config.dataset.CVC_ClinicDB.image_size, interpolation=cv2.INTER_NEAREST),
             A.HorizontalFlip(p=0.2),
             A.VerticalFlip(p=0.2),
             # A.RandomRotate90(p=0.2),
@@ -67,21 +67,21 @@ def give_augmentations(config):
     return augmentations
 
 def get_dataloader(config):
-    data_root = config.dataset.data_root
+    data_root = config.dataset.CVC_ClinicDB.data_root
     image_root = data_root + '/' + 'Original'
     gt_root = data_root + '/' + 'GroundTruth'
     augmentation = give_augmentations(config)
-    train_dataset = PolypDataset(image_root, gt_root, augmentation, train=True, train_ratio=config.dataset.train_ratio)
-    test_dataset = PolypDataset(image_root, gt_root, augmentation, train=False, train_ratio=config.dataset.train_ratio)
+    train_dataset = PolypDataset(image_root, gt_root, augmentation, train=True, train_ratio=config.dataset.CVC_ClinicDB.train_ratio)
+    test_dataset = PolypDataset(image_root, gt_root, augmentation, train=False, train_ratio=config.dataset.CVC_ClinicDB.train_ratio)
     train_loader = data.DataLoader(dataset=train_dataset,
-                                  batch_size=config.dataset.batch_size,
+                                  batch_size=config.dataset.CVC_ClinicDB.batch_size,
                                   shuffle=True,
-                                  num_workers=config.dataset.num_workers,
+                                  num_workers=config.dataset.CVC_ClinicDB.num_workers,
                                   pin_memory=True)
     test_loader = data.DataLoader(dataset=test_dataset,
-                                  batch_size=config.dataset.batch_size,
+                                  batch_size=config.dataset.CVC_ClinicDB.batch_size,
                                   shuffle=False,
-                                  num_workers=config.dataset.num_workers,
+                                  num_workers=config.dataset.CVC_ClinicDB.num_workers,
                                   pin_memory=True)
     return train_loader, test_loader
 
