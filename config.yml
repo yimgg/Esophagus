@@ -1,5 +1,5 @@
 trainer:
-  num_epochs: 500
+  num_epochs: 300
   warmup: 2
   train_ratio: 0.8
   lr: 0.001
@@ -58,7 +58,7 @@ cfp_net:
   block_2: 6 
 
 trans_unet:
-  img_dim=: 352
+  img_dim: 352
   in_channels: 3
   out_channels: 128
   head_num: 4
