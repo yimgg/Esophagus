@@ -11,11 +11,12 @@ trainer:
   resume: False
 
 dataset:
-  data_root: /dataset/cv/seg/CVC-ClinicDB/
-  batch_size: 8
-  num_workers: 4
-  image_size: 352
-  train_ratio: 0.8
+  CVC_ClinicDB:
+    data_root: /dataset/cv/seg/CVC-ClinicDB/
+    batch_size: 8
+    num_workers: 4
+    image_size: 352
+    train_ratio: 0.8
 
 finetune:
   checkpoint: CVC
