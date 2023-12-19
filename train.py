@@ -127,7 +127,7 @@ if __name__ == '__main__':
     accelerator.print(objstr(config))
 
     accelerator.print('Load Model...')
-    model = CVCUnetr(**config.cvc_netr)
+    model = CVCUnetr(**config.cvc_unetr)
     # model = TransUNet(**config.trans_unet)
     # model = CFPNet(**config.cfp_net)
     # model = u_netr(**config.u_netr)

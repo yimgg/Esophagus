@@ -1,0 +1,9 @@
+/logs
+/src/__pycache__
+/src/CFPnet/__pycache__
+/src/CVCUNETR/__pycache__
+/src/DuAT/__pycache__
+/src/SwinUNETR/__pycache__
+/src/TransUnet/__pycache__
+/src/Unet/__pycache__
+/src/Unetr/__pycache__

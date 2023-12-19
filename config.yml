@@ -20,7 +20,7 @@ dataset:
 finetune:
   checkpoint: CVC
 
-cvc_netr:
+cvc_unetr:
   dims: [64, 128, 320, 512]
   out_dim: 32
   kernel_size: 3
