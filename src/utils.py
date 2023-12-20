@@ -34,16 +34,17 @@ def resume_train_state(model, path: str, optimizer, scheduler, train_loader: tor
         epoch_checkpoint = torch.load(base_path + "/epoch.pth.tar", map_location='cpu')
         starting_epoch = epoch_checkpoint['epoch'] + 1
         best_acc = epoch_checkpoint['best_acc']
+        best_class = epoch_checkpoint['best_class']
         step = starting_epoch * len(train_loader)
         model = load_pretrain_model(base_path + "/pytorch_model.bin", model, accelerator)
         optimizer.load_state_dict(torch.load(base_path + "/optimizer.bin"))
         scheduler.load_state_dict(torch.load(base_path + "/scheduler.bin"))
         accelerator.print(f'Loading training state successfully! Start training from {starting_epoch}, Best Acc: {best_acc}')
-        return model, optimizer, scheduler, starting_epoch, step, best_acc
+        return model, optimizer, scheduler, starting_epoch, step, best_acc, best_class
     except Exception as e:
         accelerator.print(e)
         accelerator.print(f'Failed to load training state！')
-        return model, optimizer, scheduler, 0, 0, 0
+        return model, optimizer, scheduler, 0, 0, torch.tensor(0), []
 
 def load_pretrain_model(pretrain_path: str, model: nn.Module, accelerator: Accelerator):
     try:

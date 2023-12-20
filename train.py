@@ -15,7 +15,13 @@ from timm.optim import optim_factory
 
 from src import utils
 from src.CVCLoder import get_dataloader
-from src.SlimUNETR.SlimUNETR import SlimUNETR
+from src.DuAT.DuAT import DuAT
+from src.Unet.Unet import u_net
+from src.Unetr.Unetr import u_netr
+from src.SwinUNETR.SwinUNETR import swin_unetr
+from src.CFPnet.CFPnet import CFPNet
+from src.TransUnet.TransUnet import TransUNet
+from src.CVCUNETR.CVCUNETR import CVCUnetr
 from src.optimizer import LinearWarmupCosineAnnealingLR
 from src.utils import Logger, load_pretrain_model, MetricSaver, load_model_dict
 import warnings
@@ -47,6 +53,7 @@ def train_one_epoch(model: torch.nn.Module, loss_functions: Dict[str, torch.nn.m
         accelerator.backward(total_loss)
         optimizer.step()
         optimizer.zero_grad()
+
         accelerator.log({
             'Train/Total Loss': float(total_loss),
         }, step=step)
@@ -107,21 +114,28 @@ def val_one_epoch(model: torch.nn.Module, loss_functions: Dict[str, torch.nn.mod
         
     accelerator.print(f'Epoch [{epoch + 1}/{config.trainer.num_epochs}] Validation metric {metric}')
     accelerator.log(metric, step=epoch)
-    return torch.Tensor([metric['Val/mean dice_metric']]).to(accelerator.device), batch_acc, step
+    return torch.Tensor([metric['Val/mean dice_metric']]).to(accelerator.device), metric, step
 
 
 if __name__ == '__main__':
     config = EasyDict(yaml.load(open('config.yml', 'r', encoding="utf-8"), Loader=yaml.FullLoader))
     utils.same_seeds(50)
-    logging_dir = os.getcwd() + '/logs/' + str(datetime.now())
+    logging_dir = os.getcwd() + '/logs/' + config.finetune.checkpoint +str(datetime.now())
     accelerator = Accelerator(cpu=False, log_with=["tensorboard"], logging_dir=logging_dir)
     Logger(logging_dir if accelerator.is_local_main_process else None)
     accelerator.init_trackers(os.path.split(__file__)[-1].split(".")[0])
     accelerator.print(objstr(config))
 
     accelerator.print('Load Model...')
-    model = SlimUNETR(**config.slim_unetr)
-    image_size = config.dataset.image_size
+    model = CVCUnetr(**config.cvc_unetr)
+    # model = TransUNet(**config.trans_unet)
+    # model = CFPNet(**config.cfp_net)
+    # model = u_netr(**config.u_netr)
+    # model = swin_unetr(**config.swin_unetr)
+    # model = DuAT(**config.duat)
+    # model = u_net(**config.unet)
+    
+    image_size = config.dataset.CVC_ClinicDB.image_size
 
     accelerator.print('Load Dataloader...')
     train_loader, val_loader = get_dataloader(config)
@@ -159,12 +173,12 @@ if __name__ == '__main__':
     best_acc = torch.tensor(0)
     best_class = []
     # # 尝试加载预训练模型
-    model = load_pretrain_model(f"{os.getcwd()}/model_store/{config.finetune.checkpoint}/best/pytorch_model.bin", model,
-                                accelerator)
+    # model = load_pretrain_model(f"{os.getcwd()}/model_store/{config.finetune.checkpoint}/best/pytorch_model.bin", model,
+    #                             accelerator)
 
     # 尝试继续训练
     if config.trainer.resume:
-        model, optimizer, scheduler, starting_epoch, train_step, best_acc = utils.resume_train_state(model, '{}'.format(
+        model, optimizer, scheduler, starting_epoch, train_step, best_acc, best_class = utils.resume_train_state(model, '{}'.format(
             config.finetune.checkpoint), optimizer, scheduler, train_loader, accelerator)
         val_step = train_step
         
@@ -187,7 +201,6 @@ if __name__ == '__main__':
                                                       config, metrics, val_step,
                                                       post_trans, accelerator, epoch)
 
-        
         # 保存模型
         if mean_acc > best_acc:
             accelerator.save_state(output_dir=f"{os.getcwd()}/model_store/{config.finetune.checkpoint}/best")
@@ -196,7 +209,7 @@ if __name__ == '__main__':
             best_eopch = epoch
         accelerator.print('Cheakpoint...')
         accelerator.save_state(output_dir=f"{os.getcwd()}/model_store/{config.finetune.checkpoint}/checkpoint")
-        torch.save({'epoch': epoch, 'best_acc': best_acc},
+        torch.save({'epoch': epoch, 'best_acc': best_acc, 'best_class': batch_acc},
                    f'{os.getcwd()}/model_store/{config.finetune.checkpoint}/checkpoint/epoch.pth.tar')
         
         

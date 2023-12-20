@@ -8,30 +8,65 @@ trainer:
   weight_decay: 0.05
   weight_decay_end: 0.04
   pred_ratio_var: 0
-  resume: False
+  resume: True
 
 dataset:
-  data_root: /workspace/Encvis/Code/CVC-ClinicDB
-  batch_size: 8
-  num_workers: 4
-  image_size: 352
-  train_ratio: 0.8
+  CVC_ClinicDB:
+    data_root: /dataset/cv/seg/CVC-ClinicDB/
+    batch_size: 8
+    num_workers: 4
+    image_size: 352
+    train_ratio: 0.8
 
 finetune:
-  checkpoint: CVC_Slim
+  checkpoint: CVC
 
-slim_unetr:
-  in_channels: 3 
-  out_channels: 1 
-  embed_dim: 96
-  embedding_dim: 121
-  channels: [24, 48, 60]
-  blocks: [1, 2, 3, 2]
-  heads: [1, 2, 4, 4]
-  r: [4, 2, 2, 1]
-  distillation: False
-  dropout: 0.3
+cvc_unetr:
+  dims: [64, 128, 320, 512]
+  out_dim: 32
+  kernel_size: 3
+  mlp_ratio: 4
+  model_dir: /workspace/Encvis/Code/src/DuAT/pvt_v2_b2.pth
 
+duat:
+  dim: 32
+  dims: [64, 128, 320, 512] 
+  model_dir: /workspace/Encvis/Code/src/DuAT/pvt_v2_b2.pth
+
+unet:
+  spatial_dims: 2
+  in_channels: 3
+  out_channels: 1
+  channels: [4, 8, 16, 32, 64]
+  strides: [2, 2, 2, 2]
+
+swin_unetr:
+  img_size: [352,352]
+  in_channels: 3
+  out_channels: 1
+  use_checkpoint: True
+  spatial_dims: 2
+
+u_netr:
+  spatial_dims: 2
+  img_size: 352
+  in_channels: 3
+  out_channels: 1
+
+cfp_net:
+  classes: 1
+  block_1: 2
+  block_2: 6 
+
+trans_unet:
+  img_dim: 352
+  in_channels: 3
+  out_channels: 128
+  head_num: 4
+  mlp_dim: 512
+  block_num: 8
+  patch_dim: 16
+  class_num: 1
 
 
 
